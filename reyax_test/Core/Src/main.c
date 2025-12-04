@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "pump_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -153,6 +154,7 @@ int main(void)
 
   printf("LoRa init complete.\r\n");
 
+  Pump_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -576,6 +578,9 @@ void LoRa_ProcessLine(char *line)
 
                 HAL_GPIO_TogglePin(BLED_GPIO_Port, BLED_Pin);
             }
+            else if (strcasecmp(msg, "PUMP") == 0) {
+				Pump_Toggle();
+			}
             else
                 printf("  >> Unrecognized command\r\n");
         }
