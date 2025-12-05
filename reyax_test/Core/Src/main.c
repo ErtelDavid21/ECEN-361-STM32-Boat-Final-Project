@@ -163,30 +163,31 @@ int main(void)
   while (1)
   {
 //	       Beta node: send-only
-	      if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET)
-	      {
-	          HAL_Delay(50);  // debounce
-
-	          // Optional: short wait to ensure LoRa module is ready
-	          HAL_Delay(10);
-
-	          // Flush UART to clear any stray data
-	          __HAL_UART_FLUSH_DRREGISTER(&huart3);
-	          __HAL_UART_CLEAR_OREFLAG(&huart3);
-	          __HAL_UART_CLEAR_FLAG(&huart3, UART_CLEAR_NEF);
-
-//	           Send message to Alpha (address 1)
-	          LoRa_SendMessage(&huart3, 1, "LEFT");
-
-
-	          // Wait for button release to avoid multiple sends
-	          while (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET);
-	      }
-
-	          // LED feedback
-	          HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-	      HAL_Delay(100);
+//	      if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET)
+//	      {
+//	          HAL_Delay(50);  // debounce
+//
+//	          // Optional: short wait to ensure LoRa module is ready
+//	          HAL_Delay(10);
+//
+//	          // Flush UART to clear any stray data
+//	          __HAL_UART_FLUSH_DRREGISTER(&huart3);
+//	          __HAL_UART_CLEAR_OREFLAG(&huart3);
+//	          __HAL_UART_CLEAR_FLAG(&huart3, UART_CLEAR_NEF);
+//
+////	           Send message to Alpha (address 1)
+//	          LoRa_SendMessage(&huart3, 1, "LEFT");
+//
+//
+//	          // Wait for button release to avoid multiple sends
+//	          while (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET);
+//
+//	          // LED feedback
+//	          HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+//	      }
+//
+//
+//	      HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -436,8 +437,8 @@ static void MX_GPIO_Init(void)
                            Pump_Button_Pin */
   GPIO_InitStruct.Pin = Forward_Pin|Reverse_Pin|Right_Pin|Left_Pin
                           |Pump_Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD2_Pin */
@@ -453,6 +454,22 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(Pump_Control_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -701,25 +718,33 @@ void MotorControlSTOP()
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	__HAL_UART_FLUSH_DRREGISTER(&huart3);
-	__HAL_UART_CLEAR_OREFLAG(&huart3);
-	__HAL_UART_CLEAR_FLAG(&huart3, UART_CLEAR_NEF);
+//	__HAL_UART_FLUSH_DRREGISTER(&huart3);
+//	__HAL_UART_CLEAR_OREFLAG(&huart3);
+//	__HAL_UART_CLEAR_FLAG(&huart3, UART_CLEAR_NEF);
 
     if (GPIO_Pin == Forward_Pin) {
     	LoRa_SendMessage(&huart3, 1, "FORWARD");
+    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     }
     else if (GPIO_Pin == Reverse_Pin) {
     	LoRa_SendMessage(&huart3, 1, "REVERSE");
+    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     }
     else if (GPIO_Pin == Right_Pin) {
     	LoRa_SendMessage(&huart3, 1, "RIGHT");
+    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     }
     else if (GPIO_Pin == Left_Pin) {
     	LoRa_SendMessage(&huart3, 1, "LEFT");
+    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     }
     else if (GPIO_Pin == Pump_Button_Pin) {
     	LoRa_SendMessage(&huart3, 1, "PUMP");
+    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     }
+//    else{
+//    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+//    }
 }
 /* USER CODE END 4 */
 

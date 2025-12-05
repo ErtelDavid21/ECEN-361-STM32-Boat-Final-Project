@@ -63,12 +63,16 @@ void Error_Handler(void);
 #define B1_GPIO_Port GPIOC
 #define Forward_Pin GPIO_PIN_0
 #define Forward_GPIO_Port GPIOC
+#define Forward_EXTI_IRQn EXTI0_IRQn
 #define Reverse_Pin GPIO_PIN_1
 #define Reverse_GPIO_Port GPIOC
+#define Reverse_EXTI_IRQn EXTI1_IRQn
 #define Right_Pin GPIO_PIN_2
 #define Right_GPIO_Port GPIOC
+#define Right_EXTI_IRQn EXTI2_IRQn
 #define Left_Pin GPIO_PIN_3
 #define Left_GPIO_Port GPIOC
+#define Left_EXTI_IRQn EXTI3_IRQn
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
@@ -77,6 +81,7 @@ void Error_Handler(void);
 #define LD2_GPIO_Port GPIOA
 #define Pump_Button_Pin GPIO_PIN_6
 #define Pump_Button_GPIO_Port GPIOC
+#define Pump_Button_EXTI_IRQn EXTI9_5_IRQn
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
