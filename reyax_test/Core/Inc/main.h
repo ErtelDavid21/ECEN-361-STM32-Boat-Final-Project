@@ -61,34 +61,41 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define RLED_Pin GPIO_PIN_0
-#define RLED_GPIO_Port GPIOC
-#define YLED_Pin GPIO_PIN_1
-#define YLED_GPIO_Port GPIOC
-#define GLED_Pin GPIO_PIN_0
-#define GLED_GPIO_Port GPIOA
-#define BLED_Pin GPIO_PIN_1
-#define BLED_GPIO_Port GPIOA
+#define Forward_Pin GPIO_PIN_0
+#define Forward_GPIO_Port GPIOC
+#define Reverse_Pin GPIO_PIN_1
+#define Reverse_GPIO_Port GPIOC
+#define Right_Pin GPIO_PIN_2
+#define Right_GPIO_Port GPIOC
+#define Left_Pin GPIO_PIN_3
+#define Left_GPIO_Port GPIOC
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
-#define VRX_Pin GPIO_PIN_6
-#define VRX_GPIO_Port GPIOA
-#define PWM_R_Pin GPIO_PIN_10
-#define PWM_R_GPIO_Port GPIOB
+#define Pump_Button_Pin GPIO_PIN_6
+#define Pump_Button_GPIO_Port GPIOC
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
-#define PWM_L_Pin GPIO_PIN_15
-#define PWM_L_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define LeftMotor_Pin GPIO_PIN_4
+#define LeftMotor_GPIO_Port GPIOB
+#define RightMotor_Pin GPIO_PIN_5
+#define RightMotor_GPIO_Port GPIOB
+#define Pump_Control_Pin GPIO_PIN_7
+#define Pump_Control_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+void MotorControlFWD();
+void MotorControlREV();
+void MotorControlLEFT();
+void MotorControlRIGHT();
+void MotorControlSTOP();
 
 /* USER CODE END Private defines */
 

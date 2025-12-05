@@ -60,8 +60,8 @@ all: main-build
 main-build: Boat_Final.elf secondary-outputs
 
 # Tool invocations
-Boat_Final.elf Boat_Final.map: $(OBJS) $(USER_OBJS) C:\Users\7bjpr\STM32CubeIDE\ECEN361_Embedded_Systems\reyax_test\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Boat_Final.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\7bjpr\STM32CubeIDE\ECEN361_Embedded_Systems\reyax_test\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Boat_Final.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Boat_Final.elf Boat_Final.map: $(OBJS) $(USER_OBJS) C:\Users\7bjpr\Documents\CLASSES\ECEN361\ -\ Embedded\ Systems\ FALL25\ECEN-361-STM32-Boat-Final-Project\reyax_test\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Boat_Final.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\7bjpr\Documents\CLASSES\ECEN361 - Embedded Systems FALL25\ECEN-361-STM32-Boat-Final-Project\reyax_test\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Boat_Final.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

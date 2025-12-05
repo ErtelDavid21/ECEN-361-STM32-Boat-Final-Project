@@ -10,8 +10,8 @@
 //#define Pump_LED_Pin GPIO_PIN_5
 //#define Pump_LED_GPIO_Port GPIOA
 
-#define Pump_Control_Pin GPIO_PIN_?
-#define Pump_Control_GPIO_Port GPIO?
+#define Pump_Control_Pin GPIO_PIN_7
+#define Pump_Control_GPIO_Port GPIOB
 
 static uint8_t pump_state = 0;
 
