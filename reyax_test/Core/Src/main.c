@@ -48,8 +48,8 @@
 #define PWM_MAX_VALUE    50		   // 50Hz duty cycle
 
 // Choose which node this board will be
-#define NODE_ALPHA   1
-//#define NODE_BETA  1
+//#define NODE_ALPHA   1
+#define NODE_BETA  1
 
 /* USER CODE END PM */
 
@@ -132,6 +132,9 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+  //initialize motors
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 75);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75);
 
   HAL_Delay(1000); // wait for modules to boot
 
@@ -433,11 +436,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Forward_Pin Reverse_Pin Right_Pin Left_Pin
-                           Pump_Button_Pin */
-  GPIO_InitStruct.Pin = Forward_Pin|Reverse_Pin|Right_Pin|Left_Pin
-                          |Pump_Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  /*Configure GPIO pins : Forward_Pin Reverse_Pin Right_Pin Left_Pin */
+  GPIO_InitStruct.Pin = Forward_Pin|Reverse_Pin|Right_Pin|Left_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -447,6 +448,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Pump_Button_Pin */
+  GPIO_InitStruct.Pin = Pump_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Pump_Button_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Pump_Control_Pin */
   GPIO_InitStruct.Pin = Pump_Control_Pin;
@@ -688,64 +695,86 @@ void LoRa_StartReceive_IT(UART_HandleTypeDef *huart)
 
 }
 
-void MotorControlFWD()
-{
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 500);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 500);
-}
-
 void MotorControlREV()
 {
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 1000);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 1000);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 70); //50 is min
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 70);
 }
 
-void MotorControlLEFT()
+void MotorControlFWD()
 {
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 500);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 80); // 100 is max
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 80);
 }
 
 void MotorControlRIGHT()
 {
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 500);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 70); // 50 is min
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 75); // leave neutral
+}
+
+void MotorControlLEFT()
+{
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 70); // 50 min
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75); // leave min
 }
 
 void MotorControlSTOP()
 {
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 750);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 750);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 75);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-//	__HAL_UART_FLUSH_DRREGISTER(&huart3);
-//	__HAL_UART_CLEAR_OREFLAG(&huart3);
-//	__HAL_UART_CLEAR_FLAG(&huart3, UART_CLEAR_NEF);
+    if (GPIO_Pin == Forward_Pin)
+    {
+        GPIO_PinState state = HAL_GPIO_ReadPin(Forward_GPIO_Port, Forward_Pin);
 
-    if (GPIO_Pin == Forward_Pin) {
-    	LoRa_SendMessage(&huart3, 1, "FORWARD");
-    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        if (state == GPIO_PIN_RESET)   // pressed
+            LoRa_SendMessage(&huart3, 1, "FORWARD");
+        else                            // released
+            LoRa_SendMessage(&huart3, 1, "STOP");
     }
-    else if (GPIO_Pin == Reverse_Pin) {
-    	LoRa_SendMessage(&huart3, 1, "REVERSE");
-    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+
+    else if (GPIO_Pin == Reverse_Pin)
+    {
+        GPIO_PinState state = HAL_GPIO_ReadPin(Reverse_GPIO_Port, Reverse_Pin);
+
+        if (state == GPIO_PIN_RESET)
+            LoRa_SendMessage(&huart3, 1, "REVERSE");
+        else
+            LoRa_SendMessage(&huart3, 1, "STOP");
     }
-    else if (GPIO_Pin == Right_Pin) {
-    	LoRa_SendMessage(&huart3, 1, "RIGHT");
-    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+
+    else if (GPIO_Pin == Right_Pin)
+    {
+        GPIO_PinState state = HAL_GPIO_ReadPin(Right_GPIO_Port, Right_Pin);
+
+        if (state == GPIO_PIN_RESET)
+            LoRa_SendMessage(&huart3, 1, "RIGHT");
+        else
+            LoRa_SendMessage(&huart3, 1, "STOP");
     }
-    else if (GPIO_Pin == Left_Pin) {
-    	LoRa_SendMessage(&huart3, 1, "LEFT");
-    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+
+    else if (GPIO_Pin == Left_Pin)
+    {
+        GPIO_PinState state = HAL_GPIO_ReadPin(Left_GPIO_Port, Left_Pin);
+
+        if (state == GPIO_PIN_RESET)
+            LoRa_SendMessage(&huart3, 1, "LEFT");
+        else
+            LoRa_SendMessage(&huart3, 1, "STOP");
     }
-    else if (GPIO_Pin == Pump_Button_Pin) {
-    	LoRa_SendMessage(&huart3, 1, "PUMP");
-    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+
+    else if (GPIO_Pin == Pump_Button_Pin)
+    {
+            LoRa_SendMessage(&huart3, 1, "PUMP");
     }
-//    else{
-//    	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-//    }
+
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);  // optional debug LED
 }
+
 /* USER CODE END 4 */
 
 /**
